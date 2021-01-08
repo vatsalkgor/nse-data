@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { readFileSync } from 'fs';
 import NSE from '../src/index';
 const nse = new NSE();
 
@@ -19,5 +20,13 @@ describe('getStockCodes', () => {
     mockedAxios.get.mockRejectedValueOnce('Invalid URL');
     const codes = nse.getStockCodes();
     expect(codes).rejects.toThrow('Invalid URL');
+  });
+});
+describe('getStockQuote', () => {
+  it('checks correct response', async () => {
+    const file = readFileSync('tests/response.txt').toString();
+    mockedAxios.get.mockResolvedValueOnce({ data: file });
+    const quoteAxisBank = await nse.getQuote('AxisBank');
+    expect(quoteAxisBank.data[0].symbol).toBe('AXISBANK');
   });
 });
